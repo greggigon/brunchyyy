@@ -1,4 +1,4 @@
-const isReferenceValid = require('../naming')
+const isReferenceValid = require('../src/naming')
 
 describe('Naming convention for the branches', () => {
   describe('Non-prefixed names', () => {
