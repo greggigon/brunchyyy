@@ -3,6 +3,10 @@
 > A GitHub App built with [Probot](https://github.com/probot/probot) that 
 > This is a Probot app that monitors repositories for branch names and ensures those names are within policy
 
+## How Brunchyyy works
+
+//TODO explain how brunchy works and configuration parameters.
+
 ## Setup
 
 ```sh
