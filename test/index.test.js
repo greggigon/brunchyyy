@@ -76,7 +76,7 @@ describe('My Probot app', () => {
       .reply(200, configDeleteBranchTrue)
 
     scope
-      .delete(`/repos/${owner}/${repo}/git/refs/${ref}`)
+      .delete(`/repos/${owner}/${repo}/git/${ref}`)
       .reply(204)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })

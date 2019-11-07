@@ -26,11 +26,11 @@ const raiseIssue = async (context, validationResult) => {
 }
 
 const deleteBranch = async (context, ref, validationResult) => {
-  let reference = context.repo({ ref: ref })
+  let reference = context.repo({ ref: `heads/${validationResult.branchName}` })
   try {
     await context.github.git.deleteRef(reference)
   } catch (exception) {
-    context.log.error(`Issue with deleting reference ${exception}`)
+    context.log.error(`Issue with deleting reference ${reference} ${exception}`)
   }
 }
 
