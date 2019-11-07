@@ -30,15 +30,15 @@ const deleteBranch = async (context, ref, validationResult) => {
   try {
     await context.github.git.deleteRef(reference)
   } catch (exception) {
-    context.log.error(`Issue with deleting reference ${reference} ${exception}`)
+    context.log.error(`Issue with deleting reference ${reference.ref} ${exception}`)
   }
 }
 
 module.exports = app => {
   app.on('push', async context => {
     let ref = context.payload.ref
-
-    if (ref && ref.match(HEADS_REFS_REGEX)) {
+    let deleted = context.payload.deleted
+    if (!deleted && ref && ref.match(HEADS_REFS_REGEX)) {
       app.log.debug('Pushed HEADS which means branches. Will examine closely :)')
 
       let config = DEFAULT_CONFIG

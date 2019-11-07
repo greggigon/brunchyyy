@@ -17,10 +17,10 @@
     "start": "probot run ./index.js",
     "lint": "standard --fix",
     "test": "jest && standard",
-    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage",
+    "dist": "rm -rf dist/ && webpack && zip -j brunchyyy.bundle.zip dist/bundle.js package.json"
   },
   "dependencies": {
-    "@probot/serverless-lambda": "^0.3.0",
     "probot": "^9.0.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"

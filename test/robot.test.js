@@ -1,8 +1,10 @@
-const myProbotApp = require('..')
+const myProbotApp = require('../src/robot')
 const { Probot } = require('probot')
 
 const payload = require('./fixtures/valid.tags.push')
 const invalidBranchPush = require('./fixtures/push.branch.invalid')
+const invalidBranchDeletePush = require('./fixtures/push.branch.invalid.delete')
+
 const configDeleteBranchTrue = require('./fixtures/responses/config.delete.branch.true')
 const configDeleteBranchFalse = require('./fixtures/responses/config.delete.branch.false')
 
@@ -28,6 +30,7 @@ describe('My Probot app', () => {
   beforeEach(() => {
     probot = new Probot({ id: 123, cert: mockCert })
     probot.load(myProbotApp)
+    nock.cleanAll()
   })
 
   test('should ignore pushes of tags', async () => {
@@ -80,5 +83,20 @@ describe('My Probot app', () => {
       .reply(204)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
+  })
+
+  test('should ignore if push is for deleted branch', async () => {
+    // let repo = invalidBranchDeletePush.repository.name
+    // let owner = invalidBranchDeletePush.repository.owner.name
+    let installation = invalidBranchDeletePush.installation.id
+    // let ref = invalidBranchDeletePush.ref
+
+    let scope = nock('https://api.github.com').persist()
+
+    scope
+      .post(`/app/installations/${installation}/access_tokens`)
+      .reply(200, { token: 'test' })
+
+    await probot.receive({ name: 'push', payload: invalidBranchDeletePush })
   })
 })
