@@ -7,7 +7,7 @@ const DEFAULT_CONFIG = { deleteBranch: false }
 const prepareNewIssue = (validationResult, author) => {
   return {
     title: 'Invalid Branch name',
-    body: `The branch name **${validationResult.branchName}** is not valid according to Brunchyyy. 
+    body: `The branch name **${validationResult.branchName}** is not valid according to [Brunchyyy](https://github.com/greggigon/brunchyyy). 
     ${validationResult.message}`,
     assignees: [author]
   }
