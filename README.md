@@ -9,8 +9,8 @@
 Brunchyyy is monitoring **PUSH** events in the GitHub. As soon as event is received, it will compare if the branch for the event (refs/heads/* element of event payload) has name that complies with the following requirements:
 
 * non-prefixed branches are only **master** or **develop**
-* prefixed branches use one of the following prefixes: **feature/**, **bugfix/**, **hotfix/** and **release/**
-* branch names are all lowercase characters, might contain digits and followind special characters `-`, `_` and `#`
+* prefixed branches use one of the following prefixes: **feature/**, **bugfix/**, **hotfix/** and **release/**, lowercase only
+* branch names are characters, might contain digits and followind special characters `-`, `_` and `#`
 
 If the branch is named outside of the above rules, by default it will raise an issue against the repository and assigne the user who pushed the branch to it.
 If **Brunchyyy** users would like for the Robot to be a bit more firm, they can use **Brunchyyy** configuration file, to setup branch deletion option.
