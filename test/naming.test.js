@@ -42,7 +42,7 @@ describe('Naming convention for the branches', () => {
       expect(isReferenceValid('refs/heads/release123/another-one').result).toBeFalsy()
     })
 
-    test('prefixes should be lowecase', () => {
+    test('prefixes should be lowercase', () => {
       expect(isReferenceValid('refs/heads/RELEASE/foo-bar-123').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/Release/foo-bar-123').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/ReLeAse/foo-bar-123').result).toBeFalsy()
@@ -58,8 +58,8 @@ describe('Naming convention for the branches', () => {
       expect(isReferenceValid('refs/heads/bugfix/foo/bar-123').result).toBeFalsy()
     })
 
-    test('prefixed branches should have all lower case with no stupid characters', () => {
-      expect(isReferenceValid('refs/heads/hotfix/FOO-BAR-2').result).toBeFalsy()
+    test('prefixed branches should have no stupid characters and accept lowercase', () => {
+      expect(isReferenceValid('refs/heads/hotfix/FOO-BAR-2').result).toBeTruthy()
       expect(isReferenceValid('refs/heads/release/foo bar 2').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/feature/foo!').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/bugfix/foo\\blah').result).toBeFalsy()
