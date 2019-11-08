@@ -56,7 +56,7 @@ describe('My Probot app', () => {
       .reply(200, configDeleteBranchFalse)
 
     scope
-      .post(`/repos/${owner}/${repo}/issues`, body => body.title === 'Invalid Branch name')
+      .post(`/repos/${owner}/${repo}/issues`, body => body.title === 'Invalid Branch name - [bolox-branch-name]')
       .reply(201, { id: 2 })
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
@@ -86,10 +86,7 @@ describe('My Probot app', () => {
   })
 
   test('should ignore if push is for deleted branch', async () => {
-    // let repo = invalidBranchDeletePush.repository.name
-    // let owner = invalidBranchDeletePush.repository.owner.name
     let installation = invalidBranchDeletePush.installation.id
-    // let ref = invalidBranchDeletePush.ref
 
     let scope = nock('https://api.github.com').persist()
 

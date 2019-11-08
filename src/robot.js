@@ -6,7 +6,7 @@ const DEFAULT_CONFIG = { deleteBranch: false }
 
 const prepareNewIssue = (validationResult, author) => {
   return {
-    title: 'Invalid Branch name',
+    title: `Invalid Branch name - [${validationResult.branchName}]`,
     body: `The branch name **${validationResult.branchName}** is not valid according to [Brunchyyy](https://github.com/greggigon/brunchyyy). 
     ${validationResult.message}`,
     assignees: [author]
@@ -16,7 +16,6 @@ const prepareNewIssue = (validationResult, author) => {
 const raiseIssue = async (context, validationResult) => {
   let thisRepo = context.repo({})
   let newIssue = prepareNewIssue(validationResult, context.payload.pusher.name)
-
   Object.assign(newIssue, thisRepo)
   try {
     await context.github.issues.create(newIssue)
