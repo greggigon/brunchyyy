@@ -35,7 +35,13 @@ To enable branch delation, modify/create file **.github/brunchyyy.yml** in the r
   deleteBranch: true
 ```
 
-## Setup
+## Technicalities
+
+Brunchyyy Bot is build with Probot and Designed to run on AWS Lambda service. [app.yml](app.yml) file constains list of Permissions required and Events Bot listens to.
+
+To build Brunchyyy and run it locally follow guide for [Probot](https://probot.github.io/docs/development/).
+
+Once you clone this repository, simply run:
 
 ```sh
 # Install dependencies
@@ -43,13 +49,29 @@ npm install
 
 # Run the bot
 npm start
+
+# Run tests
+npm run test
+```
+
+To build Webpack compressed Lambda function run:
+
+```sh
+  npm run dist
+```
+
+Resulting zip file is ready to be uploaded to AWS Lambda function with the following example command:
+
+```sh
+ 2019-11-08 15:44:45 ⌚  Mac in ~/projects/brunchy
+± |master ✓| → aws lambda update-function-code --function-name Brunchyyy --zip-file fileb://brunchyyy.bundle.zip
 ```
 
 ## Contributing
 
 If you have suggestions for how Brunchyyy could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
 
-For more, check out the [Contributing Guide](CONTRIBUTING.md).
+Open issue with suggestion or a PR.
 
 ## License
 
