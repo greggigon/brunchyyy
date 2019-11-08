@@ -1,11 +1,39 @@
 # Brunchyyy - a friendly Neighbourhood Branch Naming Police Robot
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that 
-> This is a Probot app that monitors repositories for branch names and ensures those names are within policy
+> A GitHub App (Robot) built with [Probot](https://github.com/probot/probot).
+> Robot monitors repositories for branch names and ensures those names are valid.
+> Brunchyyy validates branch names agains standard set of branches in [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow model.
 
 ## How Brunchyyy works
 
-//TODO explain how brunchy works and configuration parameters.
+Brunchyyy is monitoring **PUSH** events in the GitHub. As soon as event is received, it will compare if the branch for the event (refs/heads/* element of event payload) has name that complies with the following requirements:
+
+* non-prefixed branches are only **master** or **develop**
+* prefixed branches use one of the following prefixes: **feature/**, **bugfix/**, **hotfix/** and **release/**
+* branch names are all lowercase characters, might contain digits and followind special characters `-`, `_` and `#`
+
+If the branch is named outside of the above rules, by default it will raise an issue against the repository and assigne the user who pushed the branch to it.
+If **Brunchyyy** users would like for the Robot to be a bit more firm, they can use **Brunchyyy** configuration file, to setup branch deletion option.
+It will cause the offending branch to be **DELETED** instead of **issue raised** against the repository.
+
+### Configuring branchy
+
+At this moment, there is only one configuration option for **Brunchyyy**, it tells the Robot if Branch with invalid name should be deleted, instead of Issue raised against it.
+
+Configuration is stored in repository, in **.github** folder in **brunchyyy.yml** file.
+
+```bash
+  2019-11-08 14:49:07 ⌚  Mac in ~/projects/sample-brunchyyy-repository
+  ± |master ✓| → ls .github/
+  brunchyyy.yml
+```
+
+The configuration parameter is called `deleteBranch` and is by default set to `false`.
+To enable branch delation, modify/create file **.github/brunchyyy.yml** in the repository with the following content:
+
+```yaml
+  deleteBranch: true
+```
 
 ## Setup
 
