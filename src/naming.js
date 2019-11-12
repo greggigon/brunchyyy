@@ -1,7 +1,7 @@
 const GITFLOW_BRANCH_NAMES = ['develop', 'master']
 const GITFLOW_BRANCH_PREFIXES = ['release', 'bugfix', 'hotfix', 'feature']
 
-const POSTFIX_BRANCH_REGEX = /^[a-zA-Z0-9\-#_]*$/
+const POSTFIX_BRANCH_REGEX = /^[a-zA-Z0-9\-#_.]*$/
 
 const isNonPrefixedBranchValid = (candidateBranch) => {
   return GITFLOW_BRANCH_NAMES.indexOf(candidateBranch) > -1
@@ -32,6 +32,6 @@ module.exports = (pushRefs) => {
     result: false,
     branchName: branchNameParts.join('/'),
     message: 'Only feature/*, bugfix/*, hotfix/* and release/* prefixed branches are allowed.' +
-      'Only lower-case characters, digits and following characters are allowed in names "-", "_", "#"'
+      'Only characters, digits and following special characters are allowed in names "-", "_", ".", "#"'
   }
 }
