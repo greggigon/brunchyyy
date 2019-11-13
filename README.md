@@ -1,6 +1,6 @@
 # Brunchyyy - a friendly Neighbourhood Branch Naming Police Robot
 
-![Build status](https://github.com/greggigon/brunchyyy/workflows/Test%20and%20Lint/badge.svg) ![ISC License](https://img.shields.io/badge/license-ISC-green)
+![](https://github.com/greggigon/brunchyyy/workflows/Test%20and%20Lint/badge.svg) ![ISC License](https://img.shields.io/badge/license-ISC-green)
 
 > A GitHub App (Robot) built with [Probot](https://github.com/probot/probot).
 > Robot monitors repositories for branch names and ensures those names are valid.
