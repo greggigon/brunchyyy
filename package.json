@@ -21,7 +21,7 @@
     "dist": "rm -rf dist/ && webpack && zip -j brunchyyy.bundle.zip dist/bundle.js package.json"
   },
   "dependencies": {
-    "probot": "^9.0.1",
+    "probot": "^9.13.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
