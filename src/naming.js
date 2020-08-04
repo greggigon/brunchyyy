@@ -1,4 +1,4 @@
-const GITFLOW_BRANCH_NAMES = ['develop', 'master']
+const GITFLOW_BRANCH_NAMES = ['develop', 'master', 'release']
 const GITFLOW_BRANCH_PREFIXES = ['release', 'bugfix', 'hotfix', 'feature']
 
 const POSTFIX_BRANCH_REGEX = /^[a-zA-Z0-9\-#_.]*$/

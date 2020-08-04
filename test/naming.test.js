@@ -39,6 +39,10 @@ describe('Naming convention for the branches', () => {
       expect(isReferenceValid('refs/heads/release/0.1.2').result).toBeTruthy()
     })
 
+    test('allowed just the release as the branch name', () => {
+      expect(isReferenceValid('refs/heads/release').result).toBeTruthy()
+    })
+
     test('random branch name prefixes are not allowed', () => {
       expect(isReferenceValid('refs/heads/foobar/another-one').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/release123/another-one').result).toBeFalsy()
