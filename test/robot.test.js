@@ -7,6 +7,7 @@ const invalidBranchDeletePush = require('./fixtures/push.branch.invalid.delete')
 
 const configDeleteBranchTrue = require('./fixtures/responses/config.delete.branch.true')
 const configDeleteBranchFalse = require('./fixtures/responses/config.delete.branch.false')
+const configDisableTrue = require('./fixtures/responses/config.disable.true.json')
 
 const fs = require('fs')
 const path = require('path')
@@ -58,6 +59,25 @@ describe('My Probot app', () => {
     scope
       .post(`/repos/${owner}/${repo}/issues`, body => body.title === 'Invalid Branch name - [bolox-branch-name]')
       .reply(201, { id: 2 })
+
+    await probot.receive({ name: 'push', payload: invalidBranchPush })
+  })
+
+  test('should disable brunchyyy when config is set to true', async () => {
+    let installation = invalidBranchPush.installation.id
+
+    let scope = nock('https://api.github.com')
+      .defaultReplyHeaders({
+        'Content-Type': 'application/json'
+      })
+
+    scope
+      .post(`/app/installations/${installation}/access_tokens`)
+      .reply(200, { token: 'test' })
+
+    scope
+      .get(/^\/repos.*\/contents.*$/)
+      .reply(200, configDisableTrue)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
   })
