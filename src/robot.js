@@ -2,7 +2,7 @@ const isReferenceValid = require('./naming')
 
 const HEADS_REFS_REGEX = /^refs\/heads\/.*$/
 const CONFIG_FILE_NAME = 'brunchyyy.yml'
-const DEFAULT_CONFIG = { deleteBranch: false }
+const DEFAULT_CONFIG = { deleteBranch: false, brunchyyyDisable: false }
 
 const prepareNewIssue = (validationResult, author) => {
   return {
@@ -49,7 +49,7 @@ module.exports = app => {
       }
 
       let validationResult = isReferenceValid(ref)
-      if (!validationResult.result) {
+      if (!validationResult.result && config.brunchyyyDisable === false) {
         if (config.deleteBranch) {
           app.log.debug(`Seems like deleteBranch is setup in repository. Removing branch. ${ref}`)
           await deleteBranch(context, ref, validationResult)
