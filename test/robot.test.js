@@ -50,6 +50,7 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     scope
@@ -61,6 +62,8 @@ describe('My Probot app', () => {
       .reply(201, { id: 2 })
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
+
+    scope.done()
   })
 
   test('should disable brunchyyy when config is set to true', async () => {
@@ -73,6 +76,7 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     scope
@@ -80,6 +84,8 @@ describe('My Probot app', () => {
       .reply(200, configDisableTrue)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
+
+    scope.done()
   })
 
   test('should delete reference when config is set to delete branches', async () => {
@@ -92,6 +98,7 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     scope
@@ -103,6 +110,7 @@ describe('My Probot app', () => {
       .reply(204)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
+    scope.done()
   })
 
   test('should ignore if push is for deleted branch', async () => {
@@ -112,8 +120,11 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     await probot.receive({ name: 'push', payload: invalidBranchDeletePush })
+
+    scope.done()
   })
 })
