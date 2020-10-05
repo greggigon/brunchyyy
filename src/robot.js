@@ -49,7 +49,7 @@ module.exports = app => {
       }
 
       let validationResult = isReferenceValid(ref)
-      if (!validationResult.result && config.brunchyyyDisable === false) {
+      if (!validationResult.result && !config.brunchyyyDisable) {
         if (config.deleteBranch) {
           app.log.debug(`Seems like deleteBranch is setup in repository. Removing branch. ${ref}`)
           await deleteBranch(context, ref, validationResult)
