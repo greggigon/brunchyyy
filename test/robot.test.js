@@ -7,6 +7,7 @@ const invalidBranchDeletePush = require('./fixtures/push.branch.invalid.delete')
 
 const configDeleteBranchTrue = require('./fixtures/responses/config.delete.branch.true')
 const configDeleteBranchFalse = require('./fixtures/responses/config.delete.branch.false')
+const configDisableTrue = require('./fixtures/responses/config.disable.true.json')
 
 const fs = require('fs')
 const path = require('path')
@@ -49,6 +50,7 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     scope
@@ -60,6 +62,30 @@ describe('My Probot app', () => {
       .reply(201, { id: 2 })
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
+
+    scope.done()
+  })
+
+  test('should disable brunchyyy when config is set to true', async () => {
+    let installation = invalidBranchPush.installation.id
+
+    let scope = nock('https://api.github.com')
+      .defaultReplyHeaders({
+        'Content-Type': 'application/json'
+      })
+
+    scope
+      .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
+      .reply(200, { token: 'test' })
+
+    scope
+      .get(/^\/repos.*\/contents.*$/)
+      .reply(200, configDisableTrue)
+
+    await probot.receive({ name: 'push', payload: invalidBranchPush })
+
+    scope.done()
   })
 
   test('should delete reference when config is set to delete branches', async () => {
@@ -72,6 +98,7 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     scope
@@ -83,6 +110,7 @@ describe('My Probot app', () => {
       .reply(204)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
+    scope.done()
   })
 
   test('should ignore if push is for deleted branch', async () => {
@@ -92,8 +120,40 @@ describe('My Probot app', () => {
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
       .reply(200, { token: 'test' })
 
     await probot.receive({ name: 'push', payload: invalidBranchDeletePush })
+
+    scope.done()
+  })
+
+  test('should use default values when yml file is not present', async () => {
+    let repo = invalidBranchPush.repository.name
+    let owner = invalidBranchPush.repository.owner.name
+    let installation = invalidBranchPush.installation.id
+
+    let scope = nock('https://api.github.com')
+      .defaultReplyHeaders({
+        'Content-Type': 'application/json'
+      })
+
+    scope
+      .post(`/app/installations/${installation}/access_tokens`)
+      .optionally()
+      .reply(200, { token: 'test' })
+
+    scope
+      .get(/^\/repos.*\/contents.*$/)
+      .reply(404, 'Not Found')
+      .persist()
+
+    scope
+      .post(`/repos/${owner}/${repo}/issues`, body => body.title === 'Invalid Branch name - [bolox-branch-name]')
+      .reply(201, { id: 2 })
+
+    await probot.receive({ name: 'push', payload: invalidBranchPush })
+
+    scope.done()
   })
 })
