@@ -93,6 +93,7 @@ describe('My Probot app', () => {
     let owner = invalidBranchPush.repository.owner.name
     let installation = invalidBranchPush.installation.id
     let ref = invalidBranchPush.ref
+    let res = encodeURIComponent(ref.substring('refs/'.length))
 
     let scope = nock('https://api.github.com').persist()
 
@@ -106,7 +107,7 @@ describe('My Probot app', () => {
       .reply(200, configDeleteBranchTrue)
 
     scope
-      .delete(`/repos/${owner}/${repo}/git/${ref}`)
+      .delete(`/repos/${owner}/${repo}/git/refs/${res}`)
       .reply(204)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
