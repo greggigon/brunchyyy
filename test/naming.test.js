@@ -12,6 +12,7 @@ describe('Naming convention for the branches', () => {
     test('accepts names that are valid GitGlow names', () => {
       expect(isReferenceValid('refs/heads/master').result).toBeTruthy()
       expect(isReferenceValid('refs/heads/develop').result).toBeTruthy()
+      expect(isReferenceValid('refs/heads/main').result).toBeTruthy()
     })
   })
 
