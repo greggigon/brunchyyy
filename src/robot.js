@@ -14,52 +14,59 @@ const prepareNewIssue = (validationResult, author) => {
 }
 
 const raiseIssue = async (context, validationResult) => {
-  let thisRepo = context.repo({})
-  let newIssue = prepareNewIssue(validationResult, context.payload.pusher.name)
+  const thisRepo = context.repo({})
+  const newIssue = prepareNewIssue(validationResult, context.payload.pusher.name)
   Object.assign(newIssue, thisRepo)
   try {
-    await context.github.issues.create(newIssue)
+    await context.octokit.issues.create(newIssue)
   } catch (exception) {
     context.log.error(`Unable to create issue ${exception}`)
   }
 }
 
 const deleteBranch = async (context, ref, validationResult) => {
-  let reference = context.repo({ ref: `heads/${validationResult.branchName}` })
+  const reference = context.repo({ ref: `heads/${validationResult.branchName}` })
   try {
-    await context.github.git.deleteRef(reference)
+    await context.octokit.git.deleteRef(reference)
   } catch (exception) {
     context.log.error(`Issue with deleting reference ${reference.ref} ${exception}`)
   }
 }
 
-module.exports = app => {
-  app.on('push', async context => {
-    let ref = context.payload.ref
-    let deleted = context.payload.deleted
-    if (!deleted && ref && ref.match(HEADS_REFS_REGEX)) {
-      app.log.debug('Pushed HEADS which means branches. Will examine closely :)')
+const loadConfiguration = async (context, app) => {
+  try {
+    const config = await context.config(CONFIG_FILE_NAME, DEFAULT_CONFIG)
+    return config
+  } catch (exception) {
+    app.log.error(`Unable to load configuration ${exception}`)
+  }
+  return DEFAULT_CONFIG
+}
 
-      let config = DEFAULT_CONFIG
-      try {
-        config = await context.config(CONFIG_FILE_NAME, DEFAULT_CONFIG)
-        app.log.debug(config.deleteBranch)
-      } catch (exception) {
-        app.log.error(`Unable to load configuration ${exception}`)
-      }
+module.exports = (app) => {
+  app.on('push', (context) => onPush(context, app))
+}
 
-      let validationResult = isReferenceValid(ref)
-      if (!validationResult.result && !config.brunchyyyDisable) {
-        if (config.deleteBranch) {
-          app.log.debug(`Seems like deleteBranch is setup in repository. Removing branch. ${ref}`)
-          await deleteBranch(context, ref, validationResult)
-        } else {
-          app.log.debug('Looks like someone uses naughty names for the branches. Will raise as ISSUE.')
-          await raiseIssue(context, validationResult)
-        }
+const onPush = async (context, app) => {
+  const ref = context.payload.ref
+  const deleted = context.payload.deleted
+  if (!deleted && ref && ref.match(HEADS_REFS_REGEX)) {
+    app.log.debug('Pushed HEADS a means branches. Will examine closely :)')
+
+    const config = await loadConfiguration(context, app)
+
+    const validationResult = isReferenceValid(ref)
+
+    if (!validationResult.result && !config.brunchyyyDisable) {
+      if (config.deleteBranch) {
+        app.log.debug(`Seems like deleteBranch is setup in repository. Removing branch. ${ref}`)
+        await deleteBranch(context, ref, validationResult)
+      } else {
+        app.log.debug('Looks like someone uses naughty names for the branches. Will raise as ISSUE.')
+        await raiseIssue(context, validationResult)
       }
-    } else {
-      app.log.debug('Not something I will be interested in')
     }
-  })
+  } else {
+    app.log.debug('Not something I will be interested in')
+  }
 }
