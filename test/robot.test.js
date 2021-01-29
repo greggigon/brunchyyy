@@ -1,49 +1,40 @@
 const myProbotApp = require('../src/robot')
-const { Probot } = require('probot')
+const { Probot, ProbotOctokit } = require('probot')
 
-const payload = require('./fixtures/valid.tags.push')
+const pushTagsPayload = require('./fixtures/valid.tags.push')
 const invalidBranchPush = require('./fixtures/push.branch.invalid')
 const invalidBranchDeletePush = require('./fixtures/push.branch.invalid.delete')
 
-const configDeleteBranchTrue = require('./fixtures/responses/config.delete.branch.true')
-const configDeleteBranchFalse = require('./fixtures/responses/config.delete.branch.false')
-const configDisableTrue = require('./fixtures/responses/config.disable.true.json')
-
-const fs = require('fs')
-const path = require('path')
-
 const nock = require('nock')
+const rawContentTypeHeader = { 'content-type': 'application/vnd.github.v3.raw; charset=utf-8' }
 
 nock.disableNetConnect()
 
 describe('My Probot app', () => {
   let probot
-  let mockCert
-
-  beforeAll((done) => {
-    fs.readFile(path.join(__dirname, 'fixtures/mock-cert.pem'), (err, cert) => {
-      if (err) return done(err)
-      mockCert = cert
-      done()
-    })
-  })
+  const githubToken = 'test'
 
   beforeEach(() => {
-    probot = new Probot({ id: 123, cert: mockCert })
-    probot.load(myProbotApp)
     nock.cleanAll()
+    const octokit = ProbotOctokit.defaults({
+      retry: { enabled: false },
+      throttle: { enabled: false }
+      // log: console
+    })
+    probot = new Probot({ id: 123, githubToken, Octokit: octokit })
+    probot.load(myProbotApp)
   })
 
   test('should ignore pushes of tags', async () => {
-    await probot.receive({ name: 'push', payload })
+    await probot.receive({ name: 'push', payload: pushTagsPayload })
   })
 
   test('should raise issue when config is set to not delete branches', async () => {
-    let repo = invalidBranchPush.repository.name
-    let owner = invalidBranchPush.repository.owner.name
-    let installation = invalidBranchPush.installation.id
+    const repo = invalidBranchPush.repository.name
+    const owner = invalidBranchPush.repository.owner.name
+    const installation = invalidBranchPush.installation.id
 
-    let scope = nock('https://api.github.com')
+    const scope = nock('https://api.github.com')
       .defaultReplyHeaders({
         'Content-Type': 'application/json'
       })
@@ -51,11 +42,11 @@ describe('My Probot app', () => {
     scope
       .post(`/app/installations/${installation}/access_tokens`)
       .optionally()
-      .reply(200, { token: 'test' })
+      .reply(200, { token: githubToken })
 
     scope
       .get(/^\/repos.*\/contents.*$/)
-      .reply(200, configDeleteBranchFalse)
+      .reply(200, 'deleteBranch: false', rawContentTypeHeader)
 
     scope
       .post(`/repos/${owner}/${repo}/issues`, body => body.title === 'Invalid Branch name - [bolox-branch-name]')
@@ -63,13 +54,13 @@ describe('My Probot app', () => {
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
 
-    scope.done()
+    expect(scope.pendingMocks()).toStrictEqual([])
   })
 
   test('should disable brunchyyy when config is set to true', async () => {
-    let installation = invalidBranchPush.installation.id
+    const installation = invalidBranchPush.installation.id
 
-    let scope = nock('https://api.github.com')
+    const scope = nock('https://api.github.com')
       .defaultReplyHeaders({
         'Content-Type': 'application/json'
       })
@@ -77,25 +68,25 @@ describe('My Probot app', () => {
     scope
       .post(`/app/installations/${installation}/access_tokens`)
       .optionally()
-      .reply(200, { token: 'test' })
+      .reply(200, { token: githubToken })
 
     scope
-      .get(/^\/repos.*\/contents.*$/)
-      .reply(200, configDisableTrue)
+      .get(/^.*\/repos.*\/contents.*$/)
+      .reply(200, 'brunchyyyDisable: true', rawContentTypeHeader)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
 
-    scope.done()
+    expect(scope.pendingMocks()).toStrictEqual([])
   })
 
   test('should delete reference when config is set to delete branches', async () => {
-    let repo = invalidBranchPush.repository.name
-    let owner = invalidBranchPush.repository.owner.name
-    let installation = invalidBranchPush.installation.id
-    let ref = invalidBranchPush.ref
-    let res = encodeURIComponent(ref.substring('refs/'.length))
+    const repo = invalidBranchPush.repository.name
+    const owner = invalidBranchPush.repository.owner.name
+    const installation = invalidBranchPush.installation.id
+    const ref = invalidBranchPush.ref
+    const res = encodeURIComponent(ref.substring('refs/'.length))
 
-    let scope = nock('https://api.github.com').persist()
+    const scope = nock('https://api.github.com').persist()
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
@@ -104,20 +95,20 @@ describe('My Probot app', () => {
 
     scope
       .get(/^\/repos.*\/contents.*$/)
-      .reply(200, configDeleteBranchTrue)
+      .reply(200, 'deleteBranch: true', rawContentTypeHeader)
 
     scope
       .delete(`/repos/${owner}/${repo}/git/refs/${res}`)
       .reply(204)
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
-    scope.done()
+    expect(scope.pendingMocks()).toStrictEqual([])
   })
 
   test('should ignore if push is for deleted branch', async () => {
-    let installation = invalidBranchDeletePush.installation.id
+    const installation = invalidBranchDeletePush.installation.id
 
-    let scope = nock('https://api.github.com').persist()
+    const scope = nock('https://api.github.com').persist()
 
     scope
       .post(`/app/installations/${installation}/access_tokens`)
@@ -126,15 +117,15 @@ describe('My Probot app', () => {
 
     await probot.receive({ name: 'push', payload: invalidBranchDeletePush })
 
-    scope.done()
+    expect(scope.pendingMocks()).toStrictEqual([])
   })
 
   test('should use default values when yml file is not present', async () => {
-    let repo = invalidBranchPush.repository.name
-    let owner = invalidBranchPush.repository.owner.name
-    let installation = invalidBranchPush.installation.id
+    const repo = invalidBranchPush.repository.name
+    const owner = invalidBranchPush.repository.owner.name
+    const installation = invalidBranchPush.installation.id
 
-    let scope = nock('https://api.github.com')
+    const scope = nock('https://api.github.com')
       .defaultReplyHeaders({
         'Content-Type': 'application/json'
       })
@@ -155,6 +146,6 @@ describe('My Probot app', () => {
 
     await probot.receive({ name: 'push', payload: invalidBranchPush })
 
-    scope.done()
+    expect(scope.pendingMocks()).toStrictEqual([])
   })
 })

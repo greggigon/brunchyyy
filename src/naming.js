@@ -15,7 +15,7 @@ const inPrefixedBranchNameValid = (candidateBranch) => {
 }
 
 module.exports = (pushRefs) => {
-  let branchNameParts = pushRefs.split('/').splice(2)
+  const branchNameParts = pushRefs.split('/').splice(2)
   if (branchNameParts.length === 1) {
     if (isNonPrefixedBranchValid(branchNameParts[0])) {
       return { result: true }
