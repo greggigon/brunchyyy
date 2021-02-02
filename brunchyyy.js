@@ -48,7 +48,18 @@ const brunchyyy = theRobot => {
 
     // Determine incoming webhook event type
     const headers = lowerCaseKeys(event.headers)
+
     const githubEventHeader = headers['x-github-event']
+    if (!githubEventHeader) {
+      return {
+        statusCode: 400,
+        body: 'X-Github-Event header is missing'
+      }
+    }
+    // If body is expected to be base64 encoded, decode it and continue
+    if (event.isBase64Encoded) {
+      event.body = Buffer.from(event.body, 'base64').toString('utf8')
+    }
 
     // Convert the payload to an Object if API Gateway stringifies it
     event.body = (typeof event.body === 'string') ? JSON.parse(event.body) : event.body
