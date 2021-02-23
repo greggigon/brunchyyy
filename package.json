@@ -1,6 +1,6 @@
 {
   "name": "brunchyyy",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This is a Probot app that monitors repositories for branch names and ensures those names are within policy",
   "author": "Greg Gigon <greg.gigon@gmail.com> (https://greggigon.com/brunchyyy)",
   "license": "ISC",
