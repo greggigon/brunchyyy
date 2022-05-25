@@ -1,5 +1,10 @@
 const isReferenceValid = require('../src/naming')
 
+const allowedBranchNamingConfig = {
+  nonPrefixedBranches: ['superbranch', 'ultrabranch'],
+  prefixedBranches: ['chore', 'docs']
+}
+
 describe('Naming convention for the branches', () => {
   describe('Non-prefixed names', () => {
     test('rejects names that are not GitFlow names', () => {
@@ -70,6 +75,18 @@ describe('Naming convention for the branches', () => {
       expect(isReferenceValid('refs/heads/release/foo bar 2').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/feature/foo!').result).toBeFalsy()
       expect(isReferenceValid('refs/heads/bugfix/foo\\blah').result).toBeFalsy()
+    })
+
+    test('prefixed branches allowed should br overridden if present', () => {
+      expect(isReferenceValid('refs/heads/feature/foo-bar-123', allowedBranchNamingConfig).result).toBeFalsy()
+      expect(isReferenceValid('refs/heads/chore/foo-bar-123', allowedBranchNamingConfig).result).toBeTruthy()
+      expect(isReferenceValid('refs/heads/docs/foo-bar-123', allowedBranchNamingConfig).result).toBeTruthy()
+    })
+
+    test('non prefixed branches allowed should br overridden if present', () => {
+      expect(isReferenceValid('refs/heads/master', allowedBranchNamingConfig).result).toBeFalsy()
+      expect(isReferenceValid('refs/heads/superbranch', allowedBranchNamingConfig).result).toBeTruthy()
+      expect(isReferenceValid('refs/heads/ultrabranch', allowedBranchNamingConfig).result).toBeTruthy()
     })
   })
 })

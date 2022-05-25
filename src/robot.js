@@ -53,12 +53,11 @@ const onPush = async (context, app) => {
   if (!deleted && ref && ref.match(HEADS_REFS_REGEX)) {
     app.log.debug('Pushed HEADS a means branches. Will examine closely :)')
 
-    const config = await loadConfiguration(context, app)
+    const {brunchyyyDisable = false, deleteBranch:shouldDeleteBranch = false, allowedBranchNaming = {}} = await loadConfiguration(context, app)
+    const validationResult = isReferenceValid(ref, allowedBranchNaming)
 
-    const validationResult = isReferenceValid(ref)
-
-    if (!validationResult.result && !config.brunchyyyDisable) {
-      if (config.deleteBranch) {
+    if (!validationResult.result && !brunchyyyDisable) {
+      if (shouldDeleteBranch) {
         app.log.debug(`Seems like deleteBranch is setup in repository. Removing branch. ${ref}`)
         await deleteBranch(context, ref, validationResult)
       } else {
