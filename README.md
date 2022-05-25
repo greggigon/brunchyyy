@@ -18,11 +18,11 @@ If the branch is named outside of the above rules, by default it will raise an i
 If **Brunchyyy** users would like for the Robot to be a bit more firm, they can use **Brunchyyy** configuration file, to setup branch deletion option.
 It will cause the offending branch to be **DELETED** instead of **issue raised** against the repository.
 
-### Configuring Brunchyyy
+## Configuring Brunchyyy
 
 At this moment, there is only one configuration option for **Brunchyyy**, it tells the Robot if a branch with invalid name should be deleted, instead of having an issue raised against it.
 
-Configuration is stored in the repository, in **.github** folder in **brunchyyy.yml** file.
+Configuration is stored in the repository, in **.github** folder in **brunchyyy.yml** file (`.github/brunchyyy.yml`).
 
 ```bash
   2019-11-08 14:49:07 ⌚  Mac in ~/projects/sample-brunchyyy-repository
@@ -30,8 +30,21 @@ Configuration is stored in the repository, in **.github** folder in **brunchyyy.
   brunchyyy.yml
 ```
 
+### Defining allowed branches names and prefixes
+
+To explicitly set what non-prefixed branch names and  which prefixies for branches are allowed, the following can be added to the configuration file:
+
+```yaml
+  allowedBranchNaming: 
+    allowedNames: ['master', 'develop']
+    allowedPrefixes: ['feature', 'fix']
+```
+The configution above will allow branches named `master` and `develop` only, plus any branch prefixed with `feature` or `fix`.
+
+### Deleting not allowed branches if found
+
 The configuration parameter is called `deleteBranch` and is by default set to `false`.
-To enable branch delation, modify/create file **.github/brunchyyy.yml** in the repository with the following content:
+To enable branch delation, add the following attibute to the configuration file:
 
 ```yaml
   deleteBranch: true
