@@ -31,10 +31,14 @@ module.exports = (pushRefs, allowedBranchNaming={}) => {
   if (inPrefixedBranchNameValid(branchNameParts, allowedPrefixes)) {
     return { result: true }
   }
+
+  const allowedNamesString = (allowedNames || DEFAULT_GITFLOW_BRANCH_NAMES).join('/*, ').replace(/, ([^,]*)$/, ' and $1/*');
+  const allowedPrefixesString = (allowedPrefixes || DEFAULT_GITFLOW_BRANCH_PREFIXES).join('/*, ').replace(/, ([^,]*)$/, ' and $1/*');
+
   return {
     result: false,
     branchName: branchNameParts.join('/'),
-    message: 'Only feature/*, bugfix/*, hotfix/* and release/* prefixed branches are allowed.' +
+    message: `Only ${allowedNamesString} branches or ${allowedPrefixesString} prefixed branches are allowed.` +
       'Only characters, digits and following special characters are allowed in names "-", "_", ".", "#"'
   }
 }
