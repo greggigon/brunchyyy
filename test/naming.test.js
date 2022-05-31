@@ -1,8 +1,8 @@
 const isReferenceValid = require('../src/naming')
 
 const allowedBranchNamingConfig = {
-  nonPrefixedBranches: ['superbranch', 'ultrabranch'],
-  prefixedBranches: ['chore', 'docs']
+  allowedNames: ['superbranch', 'ultrabranch'],
+  allowedPrefixes: ['chore', 'docs']
 }
 
 describe('Naming convention for the branches', () => {
