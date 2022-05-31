@@ -4,21 +4,21 @@ const DEFAULT_GITFLOW_BRANCH_PREFIXES = ['release', 'bugfix', 'hotfix', 'feature
 const POSTFIX_BRANCH_REGEX = /^[a-zA-Z0-9\-#_.]*$/
 
 const isNonPrefixedBranchValid = (candidateBranch, allowedNonPrefixedNaming) => {
-  const allowedNames = allowedNonPrefixedNaming || DEFAULT_GITFLOW_BRANCH_NAMES;
+  const allowedNames = allowedNonPrefixedNaming || DEFAULT_GITFLOW_BRANCH_NAMES
   return allowedNames.indexOf(candidateBranch) > -1
 }
 
 const inPrefixedBranchNameValid = (candidateBranch, allowedPrefixedNaming) => {
-  const allowedPrefixes = allowedPrefixedNaming || DEFAULT_GITFLOW_BRANCH_PREFIXES;
+  const allowedPrefixes = allowedPrefixedNaming || DEFAULT_GITFLOW_BRANCH_PREFIXES
   if (allowedPrefixes.indexOf(candidateBranch[0]) > -1) {
     return candidateBranch[1].match(POSTFIX_BRANCH_REGEX)
   }
   return false
 }
 
-module.exports = (pushRefs, allowedBranchNaming={}) => {
+module.exports = (pushRefs, allowedBranchNaming = {}) => {
   const branchNameParts = pushRefs.split('/').splice(2)
-  const {allowedNames = null, allowedPrefixes = null} = allowedBranchNaming;
+  const { allowedNames = null, allowedPrefixes = null } = allowedBranchNaming
   if (branchNameParts.length === 1) {
     if (isNonPrefixedBranchValid(branchNameParts[0], allowedNames)) {
       return { result: true }
@@ -32,8 +32,8 @@ module.exports = (pushRefs, allowedBranchNaming={}) => {
     return { result: true }
   }
 
-  const allowedNamesString = (allowedNames || DEFAULT_GITFLOW_BRANCH_NAMES).join('/*, ').replace(/, ([^,]*)$/, ' and $1/*');
-  const allowedPrefixesString = (allowedPrefixes || DEFAULT_GITFLOW_BRANCH_PREFIXES).join('/*, ').replace(/, ([^,]*)$/, ' and $1/*');
+  const allowedNamesString = (allowedNames || DEFAULT_GITFLOW_BRANCH_NAMES).join('/*, ').replace(/, ([^,]*)$/, ' and $1/*')
+  const allowedPrefixesString = (allowedPrefixes || DEFAULT_GITFLOW_BRANCH_PREFIXES).join('/*, ').replace(/, ([^,]*)$/, ' and $1/*')
 
   return {
     result: false,
